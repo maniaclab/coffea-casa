@@ -72,6 +72,9 @@ RUN conda install --yes --freeze-installed \
     htcondor \
     xgboost \
     pyhf \
+    vector \
+    hist>=2.3.0 \
+    mplhep>=0.3.8 \
     cmake \
     && conda clean --all -f -y \
     && conda build purge-all
