@@ -148,6 +148,11 @@ class CoffeaCasaCluster(HTCondorCluster):
             full_address_list = [scheduler_protocol, external_address_short]
             external_address = "".join(str(item) for item in full_address_list)
             external_ip_string = '"' + external_address + '"'
+        username = "cms-jovyan"
+        if "JUPYTERHUB_USER" in os.environ:
+            # JHUB_USER suppose to have a format oksana.shadura@email.me,
+            # but we need to make Condor happy and trim out @ symbol
+            username = os.getenv('JUPYTERHUB_USER').replace("@", ".")
         # HTCondor logging
         job_config["log_directory"] = "logs"
         job_config["silence_logs"] = "DEBUG"
@@ -178,6 +183,7 @@ class CoffeaCasaCluster(HTCondorCluster):
             },
             {"transfer_input_files": files},
             {"encrypt_input_files": files},
+            {"accounting_group_user": username},
             {"transfer_output_files": ""},
             {"when_to_transfer_output": "ON_EXIT"},
             {"should_transfer_files": "YES"},
