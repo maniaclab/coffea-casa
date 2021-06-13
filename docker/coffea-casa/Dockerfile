@@ -185,7 +185,7 @@ RUN conda install --yes --freeze-installed \
 # dask-jobqueue.git -> master has required fixes (no need to patch)
 RUN pip install --no-cache-dir \
     git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed --no-deps dask dask-jobqueue \
-    coffea_casa==2021.05.06post3 --no-deps dask dask-jobqueue distributed \
+    coffea_casa==2021.05.06post4 --no-deps dask dask-jobqueue distributed \
     pyyaml
 
 # Servicex client package (for func_adl.uproot)
