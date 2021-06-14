@@ -187,6 +187,7 @@ class CoffeaCasaCluster(HTCondorCluster):
             {"when_to_transfer_output": "ON_EXIT"},
             {"should_transfer_files": "YES"},
             {"accounting_group_user": username},
+            {"accounting_group": "cms.other.coffea"},
             {"Stream_Output": "False"},
             {"Stream_Error": "False"},
             {"+DaskSchedulerAddress": external_ip_string},
