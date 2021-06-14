@@ -183,9 +183,11 @@ RUN conda install --yes --freeze-installed \
 # Distributed & dask-jobqueue: we need to install patched version of distributed version, it is will be
 # preferable to pull proper dask and distributed versions via pip.
 # dask-jobqueue.git -> master has required fixes (no need to patch)
-RUN pip install --no-cache-dir \
-    git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed --no-deps dask dask-jobqueue \
-    coffea_casa==2021.05.06post6 --no-deps dask dask-jobqueue distributed \
+RUN pip install --ignore-installed --no-cache-dir \
+    git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed \
+    coffea_casa==2021.05.06post7 \
+    # it still installs lastest dask....
+    dask==2021.04.1 \
     pyyaml
 
 # Servicex client package (for func_adl.uproot)
