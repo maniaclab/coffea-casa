@@ -178,6 +178,7 @@ RUN conda install --yes --freeze-installed \
     vector \
     hist>=2.3.0 \
     mplhep>=0.3.8 \
+    iminuit \
     cmake
 
 # Distributed & dask-jobqueue: we need to install patched version of distributed version, it is will be
@@ -185,8 +186,9 @@ RUN conda install --yes --freeze-installed \
 # dask-jobqueue.git -> master has required fixes (no need to patch)
 RUN pip install --ignore-installed --no-cache-dir \
     pyyaml \
+    correctionlib \
     git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed \
-    coffea_casa==2021.05.06post10 \
+    coffea_casa==2021.05.06post11 \
      # it still installs lastest dask, click and other packages below...
     dask==2021.04.1 \
     click==7.1.2 \

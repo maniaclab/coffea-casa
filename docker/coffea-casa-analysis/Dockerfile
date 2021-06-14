@@ -76,6 +76,7 @@ RUN conda install --yes --freeze-installed \
     hist>=2.3.0 \
     mplhep>=0.3.8 \
     cmake \
+    iminuit \
     && conda clean --all -f -y \
     && conda build purge-all
 
@@ -87,6 +88,7 @@ RUN pip install --no-cache-dir \
 # preferable to pull proper dask and distributed versions via pip.
 # dask-jobqueue.git -> master has required fixes (no need to patch)
 RUN pip install --ignore-installed --no-cache-dir \
+    correctionlib \
     git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed \
     # it still installs lastest dask, click and other packages below...
     dask==2021.04.1 \
