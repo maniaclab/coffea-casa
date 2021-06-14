@@ -91,7 +91,7 @@ RUN pip install --ignore-installed --no-cache-dir \
     # it still installs lastest dask, click and other packages below...
     dask==2021.04.1 \
     click==7.1.2 \
-    fsspec==2021.04.1
+    fsspec==2021.04.0
 
 # ------- xrootd-authz-plugin -------------------------------
 RUN cd /tmp && \
