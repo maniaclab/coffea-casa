@@ -186,7 +186,7 @@ RUN conda install --yes --freeze-installed \
 RUN pip install --ignore-installed --no-cache-dir \
     pyyaml \
     git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed \
-    coffea_casa==2021.05.06post9 \
+    coffea_casa==2021.05.06post10 \
      # it still installs lastest dask, click and other packages below...
     dask==2021.04.1 \
     click==7.1.2 \
