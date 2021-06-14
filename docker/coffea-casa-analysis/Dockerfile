@@ -88,8 +88,10 @@ RUN pip install --no-cache-dir \
 # dask-jobqueue.git -> master has required fixes (no need to patch)
 RUN pip install --ignore-installed --no-cache-dir \
     git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed \
-    # it still installs lastest dask....
-    dask==2021.04.1
+    # it still installs lastest dask, click and other packages below...
+    dask==2021.04.1 \
+    click==7.1.2 \
+    fsspec==2021.04.1
 
 # ------- xrootd-authz-plugin -------------------------------
 RUN cd /tmp && \
