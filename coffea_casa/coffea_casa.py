@@ -152,7 +152,7 @@ class CoffeaCasaCluster(HTCondorCluster):
         if "JUPYTERHUB_USER" in os.environ:
             # JHUB_USER suppose to have a format oksana.shadura@email.me,
             # but we need to make Condor happy and trim out @ symbol
-            username = os.getenv('JUPYTERHUB_USER').replace("@", ".")
+            username = os.getenv('JUPYTERHUB_USER').replace("@", "_").replace(".", "_")
         # HTCondor logging
         job_config["log_directory"] = "logs"
         job_config["silence_logs"] = "DEBUG"
