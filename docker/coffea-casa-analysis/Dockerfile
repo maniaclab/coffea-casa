@@ -72,6 +72,9 @@ RUN conda install --yes --freeze-installed \
     htcondor \
     xgboost \
     pyhf \
+    vector \
+    hist>=2.3.0 \
+    mplhep>=0.3.8 \
     cmake \
     && conda clean --all -f -y \
     && conda build purge-all
@@ -83,8 +86,8 @@ RUN pip install --no-cache-dir \
 # Since we need to install patched version of distributed version, it is will be
 # preferable to pull proper dask and distributed versions via pip.
 # dask-jobqueue.git -> master has required fixes (no need to patch)
-RUN pip install --ignore-installed --no-cache-dir \
-    git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed
+RUN pip install --no-cache-dir \
+    git+git://github.com/oshadura/distributed.git@2021.04.1-coffea-casa#egg=distributed --no-deps dask dask-jobqueue
 
 # ------- xrootd-authz-plugin -------------------------------
 RUN cd /tmp && \
