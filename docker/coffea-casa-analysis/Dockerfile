@@ -98,7 +98,6 @@ RUN conda install --yes --freeze-installed \
     iminuit \
     cmake \
     uproot==4.0.11 \
-    && conda clean --all -f -y \
     && conda build purge-all
 
 #
@@ -127,11 +126,6 @@ RUN cd /tmp && \
 USER root
 # Setup supervisord files
 COPY supervisord.conf  /etc/supervisor/
-
-# Add HTCondor configuration files
-COPY condor_config /etc/condor/
-# Copy configuration files (currently all, to be optimised)
-COPY config.d  /etc/condor/config.d/
 
 # Setup HTCondor user/group and change group for user $NB_USER
 # Fix error (submitting jobs as user/group 0 (root) is not allowed for security reasons) and

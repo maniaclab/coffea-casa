@@ -23,6 +23,7 @@ ARG CONDOR_HOST="red-condor.unl.edu"
 ARG COLLECTOR_NAME="Nebraska T2"
 ARG UID_DOMAIN="unl.edu"
 ARG CONDOR_HOST="t3.unl.edu"
+ARG CVMFS_REPOSITORIES="cms.cern.ch,sft.cern.ch"
 
 # Hack for GH Actions
 ARG GITHUB_ACTIONS="false"
@@ -44,6 +45,10 @@ ENV CONDOR_HOST $CONDOR_HOST
 ENV COLLECTOR_NAME $COLLECTOR_NAME
 ENV UID_DOMAIN $UID_DOMAIN
 ENV CONDOR_HOST $CONDOR_HOST
+
+## CVMFS ENV
+ENV CVMFS_CLIENT_PROFILE "single"
+ENV CVMFS_REPOSITORIES $CVMFS_REPOSITORIES
      
 # Install all OS dependencies for notebook server that starts but lacks all
 # features (e.g., download as all possible file formats)
@@ -156,6 +161,8 @@ RUN apt-get update --yes && \
     tzdata \
     unzip \
     gdb \
+    autofs \
+    lsb-release \
     nano-tiny && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -240,6 +247,13 @@ COPY dask.yaml labextension.yaml jobqueue-coffea-casa.yaml $HOME/.config/dask/
 COPY dask.yaml labextension.yaml jobqueue-coffea-casa.yaml /etc/dask/
 RUN sed -i -e "s|latest|${TAG}|g" /etc/dask/jobqueue-coffea-casa.yaml && sed -i -e "s|latest|${TAG}|g" $HOME/.config/dask/jobqueue-coffea-casa.yaml
 RUN sed -i -e "s|/etc/cmsaf-secrets|${CERT_DIR}|g" /etc/dask/dask.yaml
+
+## Add CVMFS to notebook image (Should this be moved to standard install block?)
+RUN wget https://ecsft.cern.ch/dist/cvmfs/cvmfs-release/cvmfs-release-latest_all.deb
+RUN dpkg -i cvmfs-release-latest_all.deb
+RUN rm cvmfs-release-latest_all.deb
+RUN apt-get update
+RUN apt-get --yes --no-install-recommends  install cvmfs
 
 
 # FIXME: too many files and a lot of UNL hacks! (oshadura)

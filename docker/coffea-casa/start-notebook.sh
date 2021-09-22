@@ -3,7 +3,6 @@
 # Distributed under the terms of the Modified BSD License.
 
 set -e
-
 wrapper=""
 if [[ "${RESTARTABLE}" == "yes" ]]; then
     wrapper="run-one-constantly"
