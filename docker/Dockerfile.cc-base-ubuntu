@@ -1,4 +1,4 @@
-FROM coffeateam/coffea-dask:0.7.15-fastjet-3.3.4.0rc9-g0510edd
+FROM coffeateam/coffea-dask:0.7.18-fastjet-3.3.4.0rc9-g0510edd
 
 # https://github.com/jupyter/docker-stacks/blob/master/base-notebook/Dockerfile
 
@@ -114,7 +114,7 @@ RUN mamba install --quiet --yes \
     jupyterlab_widgets \
     jupyterlab-git \
     dask_labextension && \
-    mamba clean -tipsy && \
+    mamba clean --all -f -y && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
     jupyter lab clean && \
@@ -226,6 +226,7 @@ RUN pip install --no-cache-dir \
     cabinetry \
     #funcx==0.3.9 \
     pyyaml
+    #git+https://github.com/ssl-hep/servicex-labextension.git#subdirectory=servicex-dashboard
 
 USER ${NB_UID}
 # Dask, Labextention and coffea-casa setup
@@ -244,7 +245,7 @@ RUN groupadd -r condor && \
 # Cleanup
 RUN rm -rf /tmp/* \
     && rm -rf $HOME/.cache/.pip/* \
-    && mamba clean -tipsy \
+    && mamba clean --all -f -y \
     && jupyter lab clean \
     && jlpm cache clean \
     && npm cache clean --force \
