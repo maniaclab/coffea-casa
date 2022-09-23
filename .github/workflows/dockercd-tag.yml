@@ -24,6 +24,14 @@ jobs:
         with:
           version: latest
           driver-opts: network=host
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/coffea-casa/cc-base-ubuntu
+          flavor: latest=false
+          tags: |
+            type=ref,event=tag
       - name: Cache Docker layers
         uses: actions/cache@v2
         id: cache
@@ -50,9 +58,9 @@ jobs:
           context: docker/
           file: docker/Dockerfile.cc-base-ubuntu
           tags: |
-            ${{ env.REGISTRY }}/coffea-casa/cc-base-ubuntu:${{ steps.meta.outputs.tags }}
+            ${{ steps.meta.outputs.tags }}
           build-args: |
-            TAG=${{ steps.meta.outputs.tags }}
+            TAG=${{ github.ref_name }}
             PROJECT=${{ env.PROJECT }} 
             GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
             REGISTRY=${{ env.REGISTRY }}
@@ -71,6 +79,14 @@ jobs:
         with:
           version: latest
           driver-opts: network=host
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/coffea-casa/cc-ubuntu
+          flavor: latest=false
+          tags: |
+            type=ref,event=tag
       - name: Cache Docker layers
         uses: actions/cache@v2
         id: cache
@@ -97,9 +113,9 @@ jobs:
           context: docker/
           file: docker/Dockerfile.cc-ubuntu
           tags: |
-            ${{ env.REGISTRY }}/coffea-casa/cc-ubuntu:${{ steps.meta.outputs.tags }}
+            ${{ steps.meta.outputs.tags }}
           build-args: |
-            TAG=${{ steps.meta.outputs.tags }}
+            TAG=${{ github.ref_name }}
             PROJECT=${{ env.PROJECT }} 
             GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
             REGISTRY=${{ env.REGISTRY }}
@@ -145,7 +161,7 @@ jobs:
 #          tags: |
 #            ${{ env.REGISTRY }}/coffea-casa/cc-ubuntu-skyhook:${{ steps.meta.outputs.tags }}
 #          build-args: |
-#            TAG=${{ steps.meta.outputs.tags }}
+#            TAG=${{ github.ref_name }}
 #            PROJECT=${{ env.PROJECT }} 
 #            GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
 #            REGISTRY=${{ env.REGISTRY }}
@@ -166,6 +182,14 @@ jobs:
         with:
           version: latest
           driver-opts: network=host
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: ${{ env.REGISTRY }}/coffea-casa/cc-analysis-ubuntu
+          flavor: latest=false
+          tags: |
+            type=ref,event=tag
       - name: Cache Docker layers
         uses: actions/cache@v2
         id: cache
@@ -193,9 +217,9 @@ jobs:
           context: docker/
           file: docker/Dockerfile.cc-analysis-ubuntu
           tags: |
-            ${{ env.REGISTRY }}/coffea-casa/cc-analysis-ubuntu:${{ steps.meta.outputs.tags }}
+            ${{ steps.meta.outputs.tags }}
           build-args: |
-            TAG=${{ steps.meta.outputs.tags }} 
+            TAG=${{ github.ref_name }} 
             PROJECT=${{ env.PROJECT }} 
             GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
             REGISTRY=${{ env.REGISTRY }}
@@ -242,7 +266,7 @@ jobs:
 #          tags: |
 #            ${{ env.REGISTRY }}/coffea-casa/cc-analysis-ubuntu-skyhook:${{ steps.meta.outputs.tags }}
 #          build-args: |
-#            TAG=${{ steps.meta.outputs.tags }}
+#            TAG=${{ github.ref_name }}
 #            PROJECT=${{ env.PROJECT }} 
 #            GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
 #            REGISTRY=${{ env.REGISTRY }}

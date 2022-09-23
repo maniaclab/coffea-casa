@@ -13,9 +13,11 @@ SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 USER root
 LABEL maintainer="Oksana Shadura <ksu.shadura@gmail.com>"
 # Tag
+# Tag
 ARG TAG
 ARG PROJECT
-ARG WORKER_IMAGE="${HUB}/${PROJECT}/cc-analysis-ubuntu"
+ARG REGISTRY
+ARG WORKER_IMAGE="${REGISTRY}/${PROJECT}/cc-analysis-ubuntu"
 # Secrets
 ARG CERT_DIR="/etc/cmsaf-secrets"
 ARG BEARER_TOKEN_FILE=$CERT_DIR"/xcache_token"
@@ -40,6 +42,7 @@ ARG GITHUB_ACTIONS="false"
 # Configure environment
 ENV CERT_DIR=$CERT_DIR
 ENV TAG=$TAG
+ENV REGISTRY=$REGISTRY
 ENV WORKER_IMAGE=$WORKER_IMAGE
 ENV BEARER_TOKEN_FILE=$BEARER_TOKEN_FILE
 ENV DASK_ROOT_CONFIG=$DASK_ROOT_CONFIG
@@ -55,6 +58,7 @@ ENV CACHE_PREFIX=$CACHE_PREFIX
 
 USER ${NB_USER}    
 RUN pip install --no-cache-dir \
+    dask_jobqueue==0.7.3 \
     # funcx
     funcx==0.3.9 \
     # visualization

@@ -146,6 +146,7 @@ RUN apt-get update --yes && \
     apt-get install --yes --no-install-recommends \
     vim-tiny \
     git \
+    curl \
     inkscape \
     libsm6 \
     libxext-dev \
@@ -236,6 +237,10 @@ USER root
 # Add HTCondor configuration files that not needed to be edited
 COPY condor/condor_config /etc/condor/
 COPY condor/config.d  /etc/condor/config.d/
+
+RUN curl -L https://github.com/opensciencegrid/osg-vo-config/archive/refs/heads/master.tar.gz | \
+    tar -xz --strip-components=1 --directory=/etc/grid-security --wildcards */vomses */vomsdir && \
+    mv /etc/grid-security/vomses /etc
 
 # Setup HTCondor user/group and change group for user $NB_USER
 # Fix error (submitting jobs as user/group 0 (root) is not allowed for security reasons) and
