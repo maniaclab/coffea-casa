@@ -10,6 +10,19 @@ env:
   GITHUB_ACTIONS: 'true'
   REGISTRY: 'hub.opensciencegrid.org'
   CACHE_PATH: /tmp/.buildx-cache
+  NB_USER: "atlas-coffea"
+  NB_UID: "13243"
+  HUB: "hub.opensciencegrid.org"
+  XCACHE_HOST: "xcache.uc.mwt2.org"
+  CACHE_PREFIX: xcache.uc.mwt2.org
+  LABEXTENTION_CLUSTER: "SSL AF HTCondor Cluster"
+  LABEXTENTION_FACTORY_CLASS: CoffeaCasaCluster
+  LABEXTENTION_FACTORY_MODULE: coffea_casa
+  CONDOR_HOST: head01.af.uchicago.edu
+  COLLECTOR_NAME: "UChicago AF"
+  UID_DOMAIN: "af.uchicago.edu"
+  SCHEDD_HOST: "head01.af.uchicago.edu"
+  WORKER_IMAGE: "hub.opensciencegrid.org/usatlas/cc-analysis-ubuntu"
 
 jobs:
   dask-base:
@@ -65,6 +78,15 @@ jobs:
             PROJECT=${{ env.PROJECT }} 
             GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
             REGISTRY=${{ env.REGISTRY }}
+            NB_USER=${{ env.NB_USER }}
+            NB_UID=${{ env.NB_UID }}
+            LABEXTENTION_CLUSTER=${{ env.LABEXTENTION_CLUSTER }}
+            LABEXTENTION_FACTORY_CLASS=${{ env.LABEXTENTION_FACTORY_CLASS }}
+            LABEXTENTION_FACTORY_MODULE=${{ env.LABEXTENTION_FACTORY_MODULE }}
+            CONDOR_HOST=${{ env.CONDOR_HOST }}
+            COLLECTOR_NAME=${{ env.COLLECTOR_NAME }}
+            UID_DOMAIN=${{ env.UID_DOMAIN }}
+            SCHEDD_HOST=${{ env.SCHEDD_HOST }}
 
   dask-cc:
     runs-on: ubuntu-latest
@@ -120,6 +142,19 @@ jobs:
             PROJECT=${{ env.PROJECT }} 
             GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
             REGISTRY=${{ env.REGISTRY }}
+            NB_USER=${{ env.NB_USER }}
+            NB_UID=${{ env.NB_UID }}
+            HUB=${{ env.HUB }}
+            XCACHE_HOST=${{ env.XCACHE_HOST }}
+            CACHE_PREFIX=${{ env.CACHE_PREFIX}}
+            LABEXTENTION_CLUSTER=${{ env.LABEXTENTION_CLUSTER }}
+            LABEXTENTION_FACTORY_CLASS=${{ env.LABEXTENTION_FACTORY_CLASS }}
+            LABEXTENTION_FACTORY_MODULE=${{ env.LABEXTENTION_FACTORY_MODULE }}
+            CONDOR_HOST=${{ env.CONDOR_HOST }}
+            COLLECTOR_NAME=${{ env.COLLECTOR_NAME }}
+            UID_DOMAIN=${{ env.UID_DOMAIN }}
+            SCHEDD_HOST=${{ env.SCHEDD_HOST }}
+            WORKER_IMAGE=${{ env.WORKER_IMAGE }}
 
 #  dask-skyhook:
 #    runs-on: ubuntu-latest
@@ -224,6 +259,10 @@ jobs:
             PROJECT=${{ env.PROJECT }} 
             GITHUB_ACTIONS=${{ env.GITHUB_ACTIONS }}
             REGISTRY=${{ env.REGISTRY }}
+            NB_USER=${{ env.NB_USER }}
+            NB_UID=${{ env.NB_UID }}
+            XCACHE_HOST=${{ env.XCACHE_HOST }}
+            CACHE_PREFIX=${{ env.CACHE_PREFIX}}
 
 #  dask-analysis-skyhook:
 #    runs-on: ubuntu-latest
