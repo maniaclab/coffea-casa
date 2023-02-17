@@ -42,7 +42,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/coffea-casa/cc-base-ubuntu
+          images: ${{ env.REGISTRY }}/${{ env.PROJECT }}/cc-base-ubuntu
           flavor: latest=false
           tags: |
             type=ref,event=tag
@@ -106,7 +106,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/coffea-casa/cc-ubuntu
+          images: ${{ env.REGISTRY }}/${{ env.PROJECT }}/cc-ubuntu
           flavor: latest=false
           tags: |
             type=ref,event=tag
@@ -222,7 +222,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v3
         with:
-          images: ${{ env.REGISTRY }}/coffea-casa/cc-analysis-ubuntu
+          images: ${{ env.REGISTRY }}/${{ env.PROJECT }}/cc-analysis-ubuntu
           flavor: latest=false
           tags: |
             type=ref,event=tag
