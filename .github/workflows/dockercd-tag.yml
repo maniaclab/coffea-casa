@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 env:
-  PROJECT: 'coffea-casa'
+  PROJECT: 'usatlas'
   GITHUB_ACTIONS: 'true'
   REGISTRY: 'hub.opensciencegrid.org'
   CACHE_PATH: /tmp/.buildx-cache
