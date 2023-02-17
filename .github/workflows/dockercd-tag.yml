@@ -3,6 +3,7 @@ name: Build docker images and push it in Harbor
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 env:
   PROJECT: 'coffea-casa'
