@@ -11,10 +11,12 @@ from distributed.security import Security
 DEFAULT_SCHEDULER_PORT = 8786
 DEFAULT_DASHBOARD_PORT = 8787
 DEFAULT_CONTAINER_PORT = 8786
-#DEFAULT_NANNY_PORT = 8001
+DEFAULT_NANNY_PORT = 8001
 
 # Security settings for Dask scheduler
+# REMOVE ME (backward compatibity for now)
 SECRETS_DIR = Path("/etc/cmsaf-secrets")
+SECRETS_DIR_CHOWN = Path("/etc/cmsaf-secrets-chown")
 # CEPH (Skyhook)
 CEPH_DIR = Path("/opt/ceph")
 CEPH_CONF = CEPH_DIR / "ceph.conf"
@@ -23,7 +25,9 @@ CA_FILE = SECRETS_DIR / "ca.pem"
 CERT_FILE = SECRETS_DIR / "hostcert.pem"
 HOME_DIR = Path.home()
 # XCache
+# REMOVE ME (backward compatibity for now)
 XCACHE_FILE = SECRETS_DIR / "xcache_token"
+XCACHE_SCITOKEN_FILE = SECRETS_DIR_CHOWN / "access_token"
 # pip
 PIP_REQUIREMENTS = HOME_DIR / "requirements.txt"
 # conda, with yml/yaml both supported
@@ -67,7 +71,7 @@ class CoffeaCasaCluster(HTCondorCluster):
                  scheduler_options=None,
                  scheduler_port=DEFAULT_SCHEDULER_PORT,
                  dashboard_port=DEFAULT_DASHBOARD_PORT,
-                 #nanny_port=DEFAULT_NANNY_PORT,
+                 nanny_port=DEFAULT_NANNY_PORT,
                  **job_kwargs):
         """
         Parameters
@@ -114,7 +118,7 @@ class CoffeaCasaCluster(HTCondorCluster):
             worker_image=worker_image,
             scheduler_port=scheduler_port,
             dashboard_port=dashboard_port,
-            #nanny_port=nanny_port,
+            nanny_port=nanny_port,
         )
         # Instantiate args and parameters from parent abstract class security=security
         super().__init__(**job_kwargs)
@@ -128,7 +132,7 @@ class CoffeaCasaCluster(HTCondorCluster):
                            scheduler_options=None,
                            scheduler_port=DEFAULT_SCHEDULER_PORT,
                            dashboard_port=DEFAULT_DASHBOARD_PORT,
-                           #nanny_port=DEFAULT_NANNY_PORT
+                           nanny_port=DEFAULT_NANNY_PORT
                            ):
         job_config = job_kwargs.copy()
         input_files = []
@@ -142,7 +146,7 @@ class CoffeaCasaCluster(HTCondorCluster):
         if (CA_FILE.is_file() and CERT_FILE.is_file() and cls.security().get_connection_args("scheduler")["require_encryption"]):
             job_config["protocol"] = "tls://"
             job_config["security"] = cls.security()
-            input_files += [CA_FILE, CERT_FILE, XCACHE_FILE]
+            input_files += [CA_FILE, CERT_FILE, XCACHE_FILE, XCACHE_SCITOKEN_FILE]
         else:
             raise KeyError("Please check with system administarator why you do not have a certificate.")
         files = ", ".join(str(path) for path in input_files)
@@ -186,10 +190,9 @@ class CoffeaCasaCluster(HTCondorCluster):
                 "docker_image": worker_image or dask.config.get(f"jobqueue.{cls.config_name}.worker-image")
             },
             {
-                #"container_service_names": "dask,nanny",
-                #"dask_container_port": DEFAULT_CONTAINER_PORT,
-                #"nanny_container_port": nanny_port,
-                "container_service_names": "dask",
+                "container_service_names": "dask,nanny",
+                "dask_container_port": DEFAULT_CONTAINER_PORT,
+                "nanny_container_port": DEFAULT_NANNY_PORT,
                 "dask_container_port": DEFAULT_CONTAINER_PORT,
             },
             {"transfer_input_files": files},
@@ -199,6 +202,7 @@ class CoffeaCasaCluster(HTCondorCluster):
             {"should_transfer_files": "YES"},
             {"Stream_Output": "False"},
             {"Stream_Error": "False"},
+            #{"environment": "BEARER_TOKEN_FILE=$_CONDOR_JOB_IWD/access_token"},
             {"+DaskSchedulerAddress": external_ip_string},
             job_kwargs.get(
                 "job_extra", dask.config.get(f"jobqueue.{cls.config_name}.job-extra")

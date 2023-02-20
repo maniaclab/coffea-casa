@@ -47,7 +47,7 @@ ENV SCHEDD_HOST $SCHEDD_HOST
 ENV LC_ALL en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
-     
+
 # Install all OS dependencies for notebook server that starts but lacks all
 # features (e.g., download as all possible file formats)
 RUN yum -y install http://opensource.wandisco.com/centos/7/git/x86_64/wandisco-git-release-7-2.noarch.rpm \
@@ -128,7 +128,9 @@ RUN mamba install --quiet --yes \
     jupyterlab_widgets \
     jupyterlab-git \
     dask_labextension && \
-    mamba clean -tipsy && \
+    mamba clean \
+        --all \
+        --yes && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
     jupyter lab clean && \
@@ -164,6 +166,7 @@ RUN pip install --upgrade --no-cache-dir \
 # Enable the serverextensions that do not use the conf.d approach and
 # build JupyterLab.
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+    jupyter labextension install jupyterlab-jupytext && \
     jupyter serverextension enable --sys-prefix jupyterlab_git && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install dask-labextension && \
@@ -189,12 +192,16 @@ RUN mamba install --yes \
     htcondor \
     xgboost \
     pyhf \
+    cabinetry>=0.5.1 \
     vector \
     hist \
     mplhep \
     iminuit \
     cmake \
-    scikit-hep-testdata
+    scikit-hep-testdata \
+    && mamba clean \
+        --all \
+        --yes
 
 RUN pip install --no-cache-dir \
     aiostream \
@@ -204,7 +211,6 @@ RUN pip install --no-cache-dir \
     tcut_to_qastle \
     servicex-databinder \
     correctionlib \
-    cabinetry \
     func_adl_uproot \
     tcut_to_qastle \
     servicex-databinder \
@@ -229,7 +235,6 @@ RUN groupadd -r condor && \
 # Cleanup
 RUN rm -rf /tmp/* \
     && rm -rf $HOME/.cache/.pip/* \
-    && mamba clean -tipsy \
     && jupyter lab clean \
     && jlpm cache clean \
     && npm cache clean --force \

@@ -110,19 +110,22 @@ RUN mamba install --yes \
     oidc-agent \
     xgboost \
     pyhf \
+    cabinetry>=0.5.1 \
     vector \
     hist \
     mplhep \
     iminuit \
-    cmake
+    cmake \
+    && mamba clean \
+        --all \
+        --yes
 
 #
 RUN pip install --no-cache-dir coffea[servicex] \
     # for running/restarting Dask worker in sidecar container
     supervisor \
     correctionlib \
-    func_adl_uproot \
-    cabinetry
+    func_adl_uproot
 
 # ------- xrootd-authz-plugin -------------------------------
 #RUN cd /tmp && \
@@ -177,7 +180,6 @@ RUN rm -rf ${CONDA_DIR}/condabin && ln -s ${CONDA_DIR}/bin ${CONDA_DIR}/condabin
 # Cleanup
 RUN rm -rf /tmp/* \
     && rm -rf $HOME/.cache/.pip/* \
-    && mamba clean -tipsy \
     && find ${CONDA_DIR} -type f -name '*.a' -delete \
     && find ${CONDA_DIR} -type f -name '*.pyc' -delete \
     && find ${CONDA_DIR} -type f -name '*.js.map' -delete \
