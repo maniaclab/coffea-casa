@@ -12,6 +12,7 @@ env:
   CACHE_PATH: /tmp/.buildx-cache
   NB_USER: "atlas-coffea"
   NB_UID: "13243"
+  NB_GID: "5741"
   HUB: "hub.opensciencegrid.org"
   XCACHE_HOST: "xcache.uc.mwt2.org"
   CACHE_PREFIX: xcache.uc.mwt2.org
@@ -80,6 +81,7 @@ jobs:
             REGISTRY=${{ env.REGISTRY }}
             NB_USER=${{ env.NB_USER }}
             NB_UID=${{ env.NB_UID }}
+            NB_GID=${{ env.NB_GID }}
             LABEXTENTION_CLUSTER=${{ env.LABEXTENTION_CLUSTER }}
             LABEXTENTION_FACTORY_CLASS=${{ env.LABEXTENTION_FACTORY_CLASS }}
             LABEXTENTION_FACTORY_MODULE=${{ env.LABEXTENTION_FACTORY_MODULE }}
@@ -144,6 +146,7 @@ jobs:
             REGISTRY=${{ env.REGISTRY }}
             NB_USER=${{ env.NB_USER }}
             NB_UID=${{ env.NB_UID }}
+            NB_GID=${{ env.NB_GID }}
             HUB=${{ env.HUB }}
             XCACHE_HOST=${{ env.XCACHE_HOST }}
             CACHE_PREFIX=${{ env.CACHE_PREFIX}}
@@ -261,6 +264,7 @@ jobs:
             REGISTRY=${{ env.REGISTRY }}
             NB_USER=${{ env.NB_USER }}
             NB_UID=${{ env.NB_UID }}
+            NB_GID=${{ env.NB_GID }}
             XCACHE_HOST=${{ env.XCACHE_HOST }}
             CACHE_PREFIX=${{ env.CACHE_PREFIX}}
 
