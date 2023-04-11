@@ -17,10 +17,12 @@ LABEL maintainer="Oksana Shadura <ksu.shadura@gmail.com>"
 ARG TAG
 ARG PROJECT
 ARG REGISTRY
+ARG DEV
 ARG WORKER_IMAGE="${REGISTRY}/${PROJECT}/cc-analysis-ubuntu"
 # Secrets
 ARG CERT_DIR="/etc/cmsaf-secrets"
-ARG BEARER_TOKEN_FILE=$CERT_DIR"/xcache_token"
+# FIX ME AFTER TEST:
+ARG BEARER_TOKEN_FILE="/etc/cmsaf-secrets-chown/access_token"
 # Configure Labextention Dask Cluster factory
 ARG DASK_ROOT_CONFIG="/opt/dask"
 ARG LABEXTENTION_CLUSTER="UNL HTCondor Cluster"
@@ -33,8 +35,6 @@ ARG UID_DOMAIN="unl.edu"
 ARG SCHEDD_HOST="t3.unl.edu"
 # XCACHE
 ARG XCACHE_HOST="red-xcache1.unl.edu"
-# XCACHE settings for Servicex
-ARG CACHE_PREFIX="red-xcache1.unl.edu"
 
 # Hack for GH Actions
 ARG GITHUB_ACTIONS="false"
@@ -42,7 +42,7 @@ ARG GITHUB_ACTIONS="false"
 # Configure environment
 ENV CERT_DIR=$CERT_DIR
 ENV TAG=$TAG
-ENV REGISTRY=$REGISTRY
+ENV XCACHE_HOST=$XCACHE_HOST
 ENV WORKER_IMAGE=$WORKER_IMAGE
 ENV BEARER_TOKEN_FILE=$BEARER_TOKEN_FILE
 ENV DASK_ROOT_CONFIG=$DASK_ROOT_CONFIG
@@ -53,26 +53,30 @@ ENV CONDOR_HOST=$CONDOR_HOST
 ENV COLLECTOR_NAME=$COLLECTOR_NAME
 ENV UID_DOMAIN=$UID_DOMAIN
 ENV SCHEDD_HOST=$SCHEDD_HOST
-ENV XCACHE_HOST=$XCACHE_HOST
-ENV CACHE_PREFIX=$CACHE_PREFIX
 
 USER ${NB_USER}    
 RUN pip install --no-cache-dir \
     dask_jobqueue==0.7.3 \
-    # funcx
-    funcx==0.3.9 \
+    servicex-clients \
+    servicex-databinder \
+    correctionlib \
+    funcx \
+    pyyaml \
     # visualization
     Shapely==1.8.1.post1 \
     descartes==1.1.0 \
     # JSON processor
     jq \
-    # coffea casa jobqueue modules
-    coffea_casa -U
+    # ML packages
+    dask-ml \
+    comm>=0.1.2 \
+    mlflow
 
-# ------- xrootd-authz-plugin -------------------------------
+RUN if [[ -z "$DEV" ]] ; then pip install --no-cache-dir coffea_casa -U ; else pip install --no-cache-dir git+https://github.com/CoffeaTeam/coffea-casa.git#egg=coffea_casa; fi
+
+# ------- xrootd-xcache-plugin -------------------------------
 RUN cd /tmp && \
-    # ------- xrdcl-authz-plugin -------------------------------
-    git clone https://github.com/bbockelm/xrdcl-authz-plugin.git && \
+    git clone -b xcache https://github.com/jthiltges/xrdcl-authz-plugin.git && \
     cd xrdcl-authz-plugin && \
     mkdir build && \
     cd  build && \
@@ -80,14 +84,41 @@ RUN cd /tmp && \
     make && \
     make install
 
+ENV XRD_PLUGINCONFDIR="${CONDA_DIR}/etc/xrootd/client.plugins.d/"
+ENV XRD_PLUGIN="${CONDA_DIR}/lib/libXrdClXcachePlugin-5.so"
+
+# REMOVE THIS BLOCK AFTER TEST:
+# ------- xrootd-authz-plugin -------------------------------
+#RUN cd /tmp && \
+#    # ------- xrdcl-authz-plugin -------------------------------
+#    git clone https://github.com/bbockelm/xrdcl-authz-plugin.git && \
+#    cd xrdcl-authz-plugin && \
+#    mkdir build && \
+#    cd  build && \
+#    cmake /tmp/xrdcl-authz-plugin -DCMAKE_INSTALL_PREFIX=${CONDA_DIR} && \
+#    make && \
+#    make install && \
+#    ln -s ${CONDA_DIR}/lib/libXrdClAuthzPlugin-5.so ${CONDA_DIR}/lib/libXrdClAuthzPlugin.so
+
+#ENV XRD_PLUGINCONFDIR="${CONDA_DIR}/etc/xrootd/client.plugins.d/"
+#ENV XRD_PLUGIN="${CONDA_DIR}/lib/libXrdClAuthzPlugin.so"
+# Patching uproot (broken xrootd-authz-plugin with xrootd > 5.2.0 and uproot.MultithreadedXRootDSource)
+COPY uproot/uproot_xrd_source.patch /opt/conda/lib/python3.8/site-packages/uproot
+RUN cd /opt/conda/lib/python3.8/site-packages/uproot && patch < uproot_xrd_source.patch
+
+RUN chmod 755 /etc/grid-security/certificates
+COPY certs/hcc-flatiron.pem /etc/grid-security/certificates/
+RUN ln -s /etc/grid-security/certificates/hcc-flatiron.pem /etc/grid-security/certificates/80d1fda9.0
+
 # Coffea_casa - > jobqueue-coffea-casa.yaml
 COPY dask/jobqueue-coffea-casa.yaml dask/dask_tls.yaml ${DASK_ROOT_CONFIG}/
 
 USER root
 
+# REMOVE ME AFTER TEST:
 # Patching uproot (broken xrootd-authz-plugin with xrootd > 5.2.0 and uproot.MultithreadedXRootDSource)
-COPY uproot/uproot_xrd_source.patch ${CONDA_DIR}/lib/python3.8/site-packages/uproot
-RUN cd ${CONDA_DIR}/lib/python3.8/site-packages/uproot && patch < uproot_xrd_source.patch
+#COPY uproot/uproot_xrd_source.patch /opt/conda/lib/python3.8/site-packages/uproot
+#RUN cd /opt/conda/lib/python3.8/site-packages/uproot && patch < uproot_xrd_source.patch
 
 # Distributed: we need to install patched version of distributed version
 COPY dask/distributed ${CONDA_DIR}/lib/python3.8/site-packages/distributed
@@ -95,8 +126,8 @@ RUN cd ${CONDA_DIR}/lib/python3.8/site-packages/distributed && \
     patch -p2 < 0001-Patch-from-bbockelman-adaptive-scaling.patch && \
     patch -p2 < 0002-Allow-scheduler-to-preserve-worker-hostnames.patch && \
     #patch -p2 < 0003-Activate-patch.patch && \
-    patch -p2 < 0004-Add-possibility-to-setup-external_adress-for-schedul.patch
-    # && patch -p2 < 0005-Add-patch-from-John-Thiltges.patch
+    patch -p2 < 0004-Add-possibility-to-setup-external_adress-for-schedul.patch && \
+    patch -p2 < 0005-Add-nanny-patch.patch
 
 # Cleanup
 RUN rm -rf /tmp/* \
@@ -110,10 +141,6 @@ RUN rm -rf /tmp/* \
     && find ${CONDA_DIR} -type f -name '*.js.map' -delete \
     && (find ${CONDA_DIR}/lib/python*/site-packages/bokeh/server/static -type f,l -name '*.js' -not -name '*.min.js' -delete || echo "no bokeh static files to cleanup") \
     && rm -rf ${CONDA_DIR}/pkgs
-
-# xcache setup
-ENV XRD_PLUGINCONFDIR="${CONDA_DIR}/etc/xrootd/client.plugins.d/"
-ENV XRD_PLUGIN="${CONDA_DIR}/lib/libXrdClAuthzPlugin.so"
 
 # FIXME: add better layering for preparation of env
 ADD prepare-env/prepare-env-cc.sh /usr/local/bin/prepare-env.sh

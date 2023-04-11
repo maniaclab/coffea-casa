@@ -45,20 +45,6 @@ else
   echo "Skyhook was not configured. Please add next env values: SKYHOOK_CEPH_KEYRING SKYHOOK_CEPH_UUIDGEN SKYHOOK_CLUSTER_ADDR SKYHOOK_PUBLIC_ADDR SKYHOOK_MON_HOST in helm charts."
 fi
 
-# Configure oidc-agent for token management
-#echo "eval \`oidc-keychain\`" >> ~/.bashrc
-#eval `oidc-keychain`
-#oidc-gen coffea-casa --issuer $IAM_SERVER \
-#               --client-id $IAM_CLIENT_ID \ # https://cms-auth.web.cern.ch/
-#               --client-secret $IAM_CLIENT_SECRET \
-#               --rt $REFRESH_TOKEN \
-#               --confirm-yes \
-#               --scope "openid profile email wlcg wlcg.groups" \
-#               --redirect-uri  http://localhost:8843 \
-#               --pw-cmd "echo \"DUMMY PWD\""
-
-#while true; do oidc-token coffea-casa --time 1200 > /tmp/token; sleep 600; done &
-
 # Check environment
 if [ -e "$HOME/environment.yml" ]; then
     echo "Conda: environment.yml found. Installing packages."

@@ -1,4 +1,4 @@
-FROM coffeateam/coffea-dask:0.7.18-fastjet-3.3.4.0rc9-g0510edd
+FROM coffeateam/coffea-dask:0.7.21-fastjet-3.4.0.1-g0510edd
 
 # https://github.com/jupyter/docker-stacks/blob/master/base-notebook/Dockerfile
 
@@ -47,7 +47,7 @@ ENV CONDOR_HOST $CONDOR_HOST
 ENV COLLECTOR_NAME $COLLECTOR_NAME
 ENV UID_DOMAIN $UID_DOMAIN
 ENV SCHEDD_HOST $SCHEDD_HOST
-     
+
 # Install all OS dependencies for notebook server that starts but lacks all
 # features (e.g., download as all possible file formats)
 RUN apt-get update --yes && \
@@ -116,7 +116,10 @@ RUN mamba install --quiet --yes \
     jupyterlab_widgets \
     jupyterlab-git \
     dask_labextension && \
-    mamba clean --all -f -y && \
+    mamba clean \
+        --all \
+        --force-pkgs-dirs \
+        --yes && \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
     jupyter lab clean && \
@@ -179,6 +182,7 @@ RUN pip install --upgrade --no-cache-dir \
 # Enable the serverextensions that do not use the conf.d approach and
 # build JupyterLab.
 RUN jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+    jupyter labextension install jupyterlab-jupytext && \
     jupyter serverextension enable --sys-prefix jupyterlab_git && \
     jupyter serverextension enable --sys-prefix jupyterlab_github && \
     jupyter labextension install dask-labextension && \
@@ -208,28 +212,28 @@ RUN mamba install --yes \
     htcondor \
     xgboost \
     pyhf \
+    cabinetry>=0.5.1 \
     vector \
     hist \
     mplhep \
     iminuit \
     cmake \
-    scikit-hep-testdata
+    scikit-hep-testdata \
+    && mamba clean \
+        --all \
+        --force-pkgs-dirs \
+        --yes
 
 RUN pip install --no-cache-dir \
     aiostream \
     tenacity \
-    func-adl-servicex \
-    servicex \
-    #func-adl-servicex==2.0.0 \
-    #servicex==2.5.0 \
-    func_adl_uproot \
-    # Packages depends on the older version of servicex
+    servicex-clients \
     servicex-databinder \
     correctionlib \
-    cabinetry \
-    #funcx==0.3.9 \
-    pyyaml
-    #git+https://github.com/ssl-hep/servicex-labextension.git#subdirectory=servicex-dashboard
+    funcx \
+    pyyaml \
+    # https://github.com/ssl-hep/servicex-labextension.git
+    servicex-dashboard
 
 USER ${NB_UID}
 # Dask, Labextention and coffea-casa setup
@@ -252,7 +256,6 @@ RUN groupadd -r condor && \
 # Cleanup
 RUN rm -rf /tmp/* \
     && rm -rf $HOME/.cache/.pip/* \
-    && mamba clean --all -f -y \
     && jupyter lab clean \
     && jlpm cache clean \
     && npm cache clean --force \
@@ -264,10 +267,7 @@ RUN rm -rf /tmp/* \
 
 # Fix permissions for Dask/Ceph config files
 RUN chown -R "${NB_USER}:${NB_GID}" ${DASK_ROOT_CONFIG}/*.yaml
-# xcache setup
-#ENV XRD_PLUGINCONFDIR="/opt/conda/etc/xrootd/client.plugins.d/"
 ENV LD_LIBRARY_PATH="/opt/conda/lib/:$LD_LIBRARY_PATH"
-#ENV XRD_PLUGIN="/opt/conda/lib/libXrdClAuthzPlugin.so"
 ENV PATH="/opt/conda/bin/:$PATH"
 
 # FIXME: we have a wrong path, let's make a link.
