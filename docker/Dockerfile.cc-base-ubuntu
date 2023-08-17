@@ -22,7 +22,7 @@ ARG LABEXTENTION_FACTORY_MODULE="coffea_casa"
 #ARG LABEXTENTION_FACTORY_CLASS="LocalCluster"
 #ARG LABEXTENTION_FACTORY_MODULE="dask.distributed"
 # Condor settings
-ARG CONDOR_HOST="red-condor.unl.edu"
+ARG CONDOR_HOST="red-condor1.unl.edu"
 ARG COLLECTOR_NAME="Nebraska T2"
 ARG UID_DOMAIN="unl.edu"
 ARG SCHEDD_HOST="t3.unl.edu"
@@ -110,11 +110,11 @@ RUN mkdir "/home/${NB_USER}/work" && \
 # files across image layers when the permissions change
 RUN mamba install --quiet --yes \
     -c conda-forge \
-    'notebook' \
-    'jupyterhub' \
-    'jupyterlab' \
-    jupyterlab_widgets \
-    jupyterlab-git \
+    'notebook'==6.5.3 \
+    'jupyterhub'==3.1.1 \
+    'jupyterlab'==3.6.1 \
+    jupyterlab_widgets==3.0.7 \
+    jupyterlab-git==0.41.0 \
     dask_labextension && \
     mamba clean \
         --all \
@@ -175,9 +175,9 @@ RUN update-alternatives --install /usr/bin/nano nano /bin/nano-tiny 10
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 RUN pip install --upgrade --no-cache-dir \
-  jupyterlab_github \
-  jupyter_client \
-  ipywidgets
+  jupyterlab_github==3.0.1 \
+  jupyter_client==8.1.0 \
+  ipywidgets==8.0.6
 
 # Enable the serverextensions that do not use the conf.d approach and
 # build JupyterLab.
@@ -209,9 +209,12 @@ USER ${NB_UID}
 RUN mamba install --yes \
     -c conda-forge \
     conda-build \
+    gilknocker \
     htcondor \
     xgboost \
     pyhf \
+    xrootd==5.5.3 \
+    scipy>=1.8.1 \
     cabinetry>=0.5.1 \
     vector \
     hist \
@@ -232,6 +235,7 @@ RUN pip install --no-cache-dir \
     correctionlib \
     funcx \
     pyyaml \
+    jupytext \
     # https://github.com/ssl-hep/servicex-labextension.git
     servicex-dashboard
 
