@@ -110,7 +110,7 @@ RUN pip install --no-cache-dir \
     funcx \
     pyyaml \
     dask_jobqueue==0.7.3 \
-    tornado==6.2 \
+    tornado==6.3.3 \
     comm>=0.1.2 \
     dask-ml \
     mlflow

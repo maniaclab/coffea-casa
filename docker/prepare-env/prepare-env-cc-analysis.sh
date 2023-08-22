@@ -143,7 +143,7 @@ if [[ ! -v COFFEA_CASA_SIDECAR ]]; then
       --memory-limit $MEMORY_MB_FORMATTED \
       --nanny \
       --nanny-port $NANNYCONTAINER_PORT \
-      --death-timeout 180 \
+      --death-timeout 60 \
       --protocol tls \
       --lifetime 7200 \
       --listen-address tls://0.0.0.0:$CONTAINER_PORT \
