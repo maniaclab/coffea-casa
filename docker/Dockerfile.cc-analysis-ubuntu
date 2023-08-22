@@ -11,7 +11,8 @@ ARG CERT_DIR="/etc/cmsaf-secrets"
 # Hack for GH Actions
 ARG GITHUB_ACTIONS="false"
 # FIX ME AFTER TEST:
-ARG BEARER_TOKEN_FILE="/home/$NB_USER/.xcache/access_token"
+ARG BEARER_TOKEN_FILE="/tmp/.xcache/access_token"
+ARG SEC_TOKEN_SYSTEM_DIRECTORY="/tmp/.condor"
 ARG XCACHE_HOST="red-xcache1.unl.edu"
 
 
@@ -19,6 +20,7 @@ ARG XCACHE_HOST="red-xcache1.unl.edu"
 ENV CERT_DIR $CERT_DIR
 ENV XCACHE_HOST $XCACHE_HOST
 ENV BEARER_TOKEN_FILE $BEARER_TOKEN_FILE
+ENV SEC_TOKEN_SYSTEM_DIRECTORY $SEC_TOKEN_SYSTEM_DIRECTORY
 ENV CONDA_DIR /opt/conda
 ENV SHELL /bin/bash
 ENV NB_USER $NB_USER
@@ -90,6 +92,8 @@ RUN mamba install --yes \
     htcondor \
     xgboost \
     pyhf \
+    xrootd==5.5.3 \
+    scipy>=1.8.1 \
     cabinetry>=0.5.1 \
     vector \
     hist \
@@ -113,6 +117,7 @@ RUN pip install --no-cache-dir \
     tornado==6.3.3 \
     comm>=0.1.2 \
     dask-ml \
+    prometheus_client \
     mlflow
 
 RUN if [[ -z "$DEV" ]] ; then pip install --no-cache-dir coffea_casa -U ; else pip install --no-cache-dir git+https://github.com/CoffeaTeam/coffea-casa.git#egg=coffea_casa; fi
