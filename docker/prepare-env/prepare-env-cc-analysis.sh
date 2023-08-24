@@ -134,7 +134,7 @@ if [[ ! -v COFFEA_CASA_SIDECAR ]]; then
 
       # Dask worker command execurted in HTCondor pool.
       # Communication protocol: in Coffea-casa we use only secured communications (over TLS)
-      HTCONDOR_COMAND="/opt/conda/bin/python -m distributed.cli.dask_worker $EXTERNALIP_PORT \
+      HTCONDOR_COMAND="DASK_LOGGING__DISTRIBUTED=debug /opt/conda/bin/python -m distributed.cli.dask_worker $EXTERNALIP_PORT \
       --name $NAME \
       --tls-ca-file $PATH_CA_FILE \
       --tls-cert $FILE_CERT \
