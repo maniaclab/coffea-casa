@@ -133,7 +133,7 @@ if [[ ! -v COFFEA_CASA_SIDECAR ]]; then
       cat $_CONDOR_JOB_AD 1>&2
 
       #try adding a random wait -- "Timed out starting worker" - "TLS handshake failed with remote" under load
-      sleep $((RANDOM % 30))
+      sleep $((RANDOM % 100))
 
       # Dask worker command execurted in HTCondor pool.
       # Communication protocol: in Coffea-casa we use only secured communications (over TLS)
